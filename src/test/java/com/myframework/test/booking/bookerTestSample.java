@@ -1,21 +1,24 @@
-package booker;
+package com.myframework.test.booking;
 
+import com.myframework.payload.booking.booker_payload;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import payloads.booker_payload;
-import utils.RestUtils;
+import com.myframework.test.BaseTest;
+import RestUtils.RestUtils;
+import utils.JsonUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookerTest {
+public class bookerTestSample extends BaseTest {
 
-    @Test
+    @Test(enabled = false)
     public void getBookingIdsBasicTest() {
-        String response = RestAssured.given().baseUri("https://restful-booker.herokuapp.com").
+        String response = RestAssured.given().baseUri(theBaseUri).
                 contentType(ContentType.JSON).log().all().
                 body("{\n" +
                         "    \"firstname\": \"Jim\",\n" +
@@ -27,7 +30,7 @@ public class BookerTest {
                         "        \"checkout\": \"2019-01-01\"\n" +
                         "    },\n" +
                         "    \"additionalneeds\": \"Breakfast\"\n" +
-                        "}").when().post("/booking").then().log().all().log().all().
+                        "}").when().post().then().log().all().log().all().
                 extract().response().asString();
 
         JsonPath json = new JsonPath(response);
@@ -42,10 +45,10 @@ public class BookerTest {
         System.out.println("first name is " + bookingDate);
     }
 
-    @Test
+    @Test(enabled = false)
     public void getBookingMethod() {
         String uri="https://restful-booker.herokuapp.com";
-        String path="/booking";
+        String path= "/com/myframework/test/booking";
         String body="{\n" +
                 "    \"firstname\": \"Jim\",\n" +
                 "    \"lastname\": \"Brown\",\n" +
@@ -65,10 +68,10 @@ public class BookerTest {
         System.out.println("booking id is " + bookingId);
     }
 
-    @Test
+    @Test(enabled = false)
     public void getBookingMethod2() {
         String uri="https://restful-booker.herokuapp.com";
-        String path="/booking";
+        String path= "/com/myframework/test/booking";
         String body= booker_payload.getBookingPayload("namea","nameb");
 
         String response = RestUtils.performPost(uri,path,body,new HashMap<>());
@@ -78,16 +81,30 @@ public class BookerTest {
         System.out.println("booking id is " + bookingId);
     }
 
-    @Test
+    @Test(enabled = false)
     public void getBookingMethod3() {
-        String uri="https://restful-booker.herokuapp.com";
-        String path="/booking";
         Map<String, Object> body= booker_payload.getBookingPayloadMap("namec","named");
-
-        String response = RestUtils.performPost(uri,path,body,new HashMap<>());
+        String response = RestUtils.performPost(theBaseUri,"",body,new HashMap<>());
         JsonPath json = new JsonPath(response);
 
         String bookingId = json.getString("bookingid");
         System.out.println("booking id is " + bookingId);
     }
+
+    @Test(enabled = false)
+    public void getBookingMethod4() throws IOException {
+
+        String environment=System.getProperty("Env");
+        String env=environment==null?"qa":environment;
+        Map<String,Object>data=JsonUtils.getJsoDataAsMap("/booking/qa/bookingData.json");
+        String url=data.get("endPoint").toString();
+        Map<String, Object> body= booker_payload.getBookingPayloadMap("namec","named");
+        String response = RestUtils.performPost(url,"",body,new HashMap<>());
+        JsonPath json = new JsonPath(response);
+
+        String bookingId = json.getString("bookingid");
+        System.out.println("booking id is " + bookingId);
+        Assert.assertTrue(!bookingId.isBlank()|| !bookingId.isEmpty() );
+    }
+
 }

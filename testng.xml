@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Rest Assured" parallel="none">
+    <listeners>
+        <listener class-name="reports.SetUp"></listener>
+    </listeners>
+    <test name="Booking">
+        <classes>
+            <class name="com.myframework.test.booking.bookerTest"/>
+        </classes>
+    </test>
+</suite>

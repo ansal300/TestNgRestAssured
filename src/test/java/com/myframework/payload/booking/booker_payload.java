@@ -1,4 +1,4 @@
-package payloads;
+package com.myframework.payload.booking;
 
 import java.util.HashMap;
 import java.util.Map;
