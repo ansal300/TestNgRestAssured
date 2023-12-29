@@ -1,14 +1,18 @@
 package reports;
 
 import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.markuputils.CodeLanguage;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
+import io.restassured.http.Header;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExtentReport {
 
@@ -46,6 +50,11 @@ public class ExtentReport {
         SetUp.getTest().fail(MarkupHelper.createLabel(log, ExtentColor.RED));
     }
 
+    public static void logExceptionDetails(String log)
+    {
+        SetUp.getTest().fail(log);
+    }
+
     public static void logInfoDetails(String log)
     {
         SetUp.getTest().info(MarkupHelper.createLabel(log, ExtentColor.GREY));
@@ -54,5 +63,19 @@ public class ExtentReport {
     public static void logWarningDetails(String log)
     {
         SetUp.getTest().warning(MarkupHelper.createLabel(log, ExtentColor.YELLOW));
+    }
+
+    public static void logJson(String json)
+    {
+        SetUp.getTest().info(MarkupHelper.createCodeBlock(json,CodeLanguage.JSON));
+    }
+
+    public static void logHeader(List<Header> headerList)
+    {
+        List<Header>a=headerList;
+        String [][]arrayHeaders=headerList.stream().map
+            (header->
+                    new String[]{header.getName(),header.getValue()}).toArray(String[][]::new);
+        SetUp.getTest().info(MarkupHelper.createTable(arrayHeaders));
     }
 }
